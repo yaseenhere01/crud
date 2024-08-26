@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Todo</title>
+  </head>
+  <body>
+    
+<div class="container mt-5 ">
+    <input  class="form-control my-2 " id="title" type="text" placeholder="Enter Your Title">
+    <textarea class="form-control my-2 " placeholder="Enter Your Description" name="" id="desc" cols="30" rows="3"></textarea>
+    <button id="addtodo" onclick="addtodo()" class="btn btn-success" >Add Todo</button>
+    <table class="table table-bordered my-2 " >
+        <thead>
+            <tr>
+                <th>Sno</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tbody" >
+           
+        </tbody>
+    </table>
+</div>
+   
+
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        var todo=[];
+    
+        var title=document.getElementById("title");
+        var desc = document.getElementById("desc");
+
+        function addtodo (){
+            if(title.value==""|| desc.value==""){
+                alert("All fields are required")
+            }
+                else{
+                    todo.push({title:title.value, desc:desc.value})
+                    localStorage.setItem("data",JSON.stringify(todo))
+                    title.value="";
+                    desc.value="";
+                    updateTodo();
+                }
+
+            }
+
+
+                function updateTodo(){
+                    todo =JSON.parse(localStorage.getItem("data"));
+                    if(todo == null){
+                        todo = [];
+                    }
+                    else{
+                    var dynamicdata ="";
+                    todo.forEach(function (data,index){
+                        dynamicdata=dynamicdata+`
+                           <tr>
+                            <td>${index+1}</td>
+                            <td>${data.title}</td>
+                            <td>${data.desc}</td>
+                            <td class="d-flex" ><button onclick="saveTodo(${index})" class="btn btn-success save d-none mx-1" >Save</button><button onclick="editTodo(${index})" class="btn btn-success mx-1 edit" >Edit</button><button onclick="deleteTodo(${index})" class=" btn btn-danger " >Delete</button></td>
+                        </tr>   `
+                    } )
+                    document.getElementById("tbody").innerHTML=dynamicdata;
+                }
+                    
+                   }
+
+
+         updateTodo();
+
+
+         function deleteTodo(index){
+            todo = JSON.parse(localStorage.getItem("data"));
+            todo.splice(index , 1);
+            localStorage.setItem("data",JSON.stringify(todo))
+            updateTodo();
+         }
+        
+         function editTodo(index){
+            if(document.getElementById("addtodo").style.display == "none"){
+                alert("You Are Already In Editing Mode")
+            }
+            else{
+                document.getElementById("addtodo").style.display = "none";
+            document.getElementsByClassName("edit")[index].classList.add("d-none");
+            document.getElementsByClassName("save")[index].classList.remove("d-none");
+            todo = JSON.parse(localStorage.getItem("data"));
+            title.value = todo[index].title;
+            desc.value = todo[index].desc;
+            }
+         }
+
+         function saveTodo(index){
+            document.getElementById("addtodo").style.display = "block";
+            document.getElementsByClassName("save")[index].classList.add("d-none");
+            document.getElementsByClassName("edit")[index].classList.remove("d-none");
+            todo = JSON.parse(localStorage.getItem("data"))
+            todo[index].title = title.value;
+            todo[index].desc = desc.value;
+            localStorage.setItem("data",JSON.stringify(todo))
+            title.value="";
+            desc.value="";
+            updateTodo();
+         }
+    </script>
+
+ 
+
+  </body>
+</html>
